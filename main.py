@@ -72,14 +72,3 @@ if __name__ == '__main__':
 	choice = int(input("Please enter your Choice: \n"))
 	tor_link = result[choice][3]
 	print retrieve_mag(tor_link)
-	# # book_ls = ["绝世唐门", "庆余年", "英雄志", "完美世界", "极品公子", "诛仙", "亵渎", "紫川", "佣兵天下", "新宋", "流氓高手", "流氓仙厨"]
-	# book_ls = ["王牌进化"]
-	# for book in book_ls:
-	# 	book_NO = bookLookup("site:bxwx8.org {name}全文完整版txt".format(name=book))
-	# 	if book_NO:
-	# 		download_url = "http://txt.bxwxtxt.com/packdown/fulltxt/{cat}/{no}.txt".format(cat = book_NO[:-3], no = book_NO)
-	# 		if not os.path.exists("downloads"):
-	# 			os.makedirs("downloads") 
-	# 		urllib.urlretrieve(download_url, u"downloads/{name}.txt".format(name=book))
-	# 	else:
-	# 		print "book not found"
