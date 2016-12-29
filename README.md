@@ -14,7 +14,7 @@ Well, I feel this will be more interesting. Seeing more possibilities with it. G
 - [ ] Provide a summary of the movie from [avso.pw](www.avso.pw) (giving a link to the movie or maybe something better, not sure).
   - If providing screenshots there will be more work. For example, displaying screenshots will require a graphic interface.
   - Maybe include actor stats and photo and relevant actors?
-- [ ]**Cross-platform build is not easy.** But `pyinstaller` do build on all platforms just have to build again in windows/linux to distribute versions.
+- [ ] **Cross-platform build is not easy.** But `pyinstaller` do build on all platforms just have to build again in windows/linux to distribute versions.
 - [ ] Windows build.
 
 
