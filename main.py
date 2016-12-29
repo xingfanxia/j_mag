@@ -60,7 +60,7 @@ def retrieve_mag(url):
 	return magnet
 
 if __name__ == '__main__':
-	query = str(raw_ input("Please enter search keyword: \n"))
+	query = str(raw_input("Please enter search keyword: \n"))
 	result = torrent_lookup(query)
 	print "Here is a List of the Movies:"
 	print "================================================="	
