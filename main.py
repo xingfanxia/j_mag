@@ -67,7 +67,7 @@ def retrieve_mag(url):
 	magnet = doc.cssselect("#magnetLink")[0].text
 	return magnet
 
-def session():
+if __name__ == '__main__':
 	query = str(raw_input("Please enter search keyword: \n"))
 	pages = int(raw_input("How many pages do you want to display: (30 entries per page)\n"))
 	result = torrent_lookup(query, pages)
@@ -87,7 +87,4 @@ def session():
 		tor_link = result[choice][3]
 		print mv_title + ":"
 		print retrieve_mag(tor_link)
-
-if __name__ == '__main__':
-	while True:
-		session()
+		print "----------------------------------"
