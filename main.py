@@ -11,29 +11,28 @@ from lxml import html, etree
 reload(sys) 
 sys.setdefaultencoding('utf-8')
 
-# hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-# 	   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-# 	   'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-# 	   'Accept-Encoding': 'none',
-# 	   'Accept-Language': 'en-US,en;q=0.8',
-# 	   'Connection': 'keep-alive'}
+hdr = {'User-Agent': 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.3; AskTB5.6)',
+	   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	   'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+	   'Accept-Encoding': 'none',
+	   'Accept-Language': 'en-US,en;q=0.8',
+	   'Connection': 'keep-alive'}
 
 def torrent_lookup(key, pages):
-	# global hdr
+	global hdr
 	count = 0
 	tor_dict = dict()
 	query = urllib.urlencode( {'q' : key } )
 	base_url = "https://btso.pw/search/" + query[2:]
 	for i in range(1, pages+1):
-		# url = base_url + "/page/"+str(i)
-		# print url
-		# req = urllib2.Request(url, headers=hdr)
-		# try:
-		# 	page = urllib2.urlopen(req)
-		# except urllib2.HTTPError, e:
-		# 	print e.fp.read()
-		# source = page.read()
-		source = requests.get(url).text
+		url = base_url + "/page/"+str(i)
+		req = urllib2.Request(url, headers=hdr)
+		try:
+			page = urllib2.urlopen(req)
+		except urllib2.HTTPError, e:
+			print e.fp.read()
+		source = page.read()
+		# source = requests.get(url).text
 		doc = html.fromstring(source)
 		torrent_urls = doc.cssselect(".data-list>.row")
 		if not torrent_urls:
@@ -54,36 +53,43 @@ def torrent_lookup(key, pages):
 	return tor_dict
 
 def retrieve_mag(url):
-	# # global hdr
-	# req = urllib2.Request(url, headers=hdr)
-	# try:
-	# 	page = urllib2.urlopen(req)
-	# except urllib2.HTTPError, e:
-	# 	print e.fp.read()
-	# source = page.read()
-	source = requests.get(url).text
+	global hdr
+	req = urllib2.Request(url, headers=hdr)
+	try:
+		page = urllib2.urlopen(req)
+	except urllib2.HTTPError, e:
+		print e.fp.read()
+	source = page.read()
+	# source = requests.get(url).text
 	doc = html.fromstring(source)
 	magnet = doc.cssselect("#magnetLink")[0].text
 	return magnet
 
 if __name__ == '__main__':
-	query = str(raw_input("Please enter search keyword: \n"))
-	pages = int(raw_input("How many pages do you want to display: (30 entries per page)\n"))
-	result = torrent_lookup(query, pages)
-	print "Here is a List of the Movies:"
-	print "================================================="	
-	for i in range(1, len(result)+1):
-		print "Movie {num}:".format(num=i)
-		for items in result[i]:
-			print items
-		print "***********************************************"
+	while True:
+		query = str(raw_input("Please enter search keyword: \n"))
+		pages = int(raw_input("How many pages do you want to display: (30 entries per page)\n"))
+		result = torrent_lookup(query, pages)
 
-	choices = raw_input("enter choices separated by space:\n")
-	choice_ls = map(int, choices.split(' '))
-	print "\nHere are the magnet links: \n ----------------------------------"
-	for choice in choice_ls:
-		mv_title = result[choice][0]
-		tor_link = result[choice][3]
-		print mv_title + ":"
-		print retrieve_mag(tor_link)
-		print "----------------------------------"
+		print "Here is a List of the Movies:"
+		print "================================================="	
+		for i in range(1, len(result)+1):
+			print "Movie {num}:".format(num=i)
+			for items in result[i]:
+				print items
+			print "***********************************************"
+
+		choices = raw_input("enter choices separated by space:\n")
+		choice_ls = map(int, choices.split(' '))
+		print "\nHere are the magnet links: \n ----------------------------------"
+		for choice in choice_ls:
+			mv_title = result[choice][0]
+			tor_link = result[choice][3]
+			print mv_title + ":"
+			print retrieve_mag(tor_link)
+			print "----------------------------------"
+
+		flag = raw_input("Type q to quit; else to continue searching \n")
+		if flag == 'q':
+			sys.exit()
+
