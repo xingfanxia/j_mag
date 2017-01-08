@@ -17,5 +17,6 @@ Well, I feel this will be more interesting. Seeing more possibilities with it. G
     - If query is a actor name: provide actor stats and relevant actors
     - If query is a movie: provide a list of actors and their stats
 - [ ] **Cross-platform build is not easy.** But `pyinstaller` do build on all platforms just have to build again in windows/linux to distribute versions. Tried to build on windows, but cross-language compatibility is hard to achieve on windows. Windows' shell(cmd) or powershell cannot display languages other than the system default language properly.
+- [ ] Upgrade to python3. Currently something really wrong with lxml, can't import lxml with python3.
 
 
