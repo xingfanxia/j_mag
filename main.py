@@ -11,32 +11,30 @@ from lxml import html, etree
 reload(sys) 
 sys.setdefaultencoding('utf-8')
 
-hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-	   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-	   'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-	   'Accept-Encoding': 'none',
-	   'Accept-Language': 'en-US,en;q=0.8',
-	   'Connection': 'keep-alive'}
+# hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+# 	   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+# 	   'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+# 	   'Accept-Encoding': 'none',
+# 	   'Accept-Language': 'en-US,en;q=0.8',
+# 	   'Connection': 'keep-alive'}
 
 def torrent_lookup(key, pages):
-	global hdr
+	# global hdr
 	count = 0
 	tor_dict = dict()
 	query = urllib.urlencode( {'q' : key } )
 	base_url = "https://btso.pw/search/" + query[2:]
 	for i in range(1, pages+1):
-		url = base_url + "/page/"+str(i)
-		print url
-		req = urllib2.Request(url, headers=hdr)
-		try:
-			page = urllib2.urlopen(req)
-		except urllib2.HTTPError, e:
-			print e.fp.read()
-		source = page.read()
-		try:
-			doc = html.fromstring(source)
-		except:
-			pass
+		# url = base_url + "/page/"+str(i)
+		# print url
+		# req = urllib2.Request(url, headers=hdr)
+		# try:
+		# 	page = urllib2.urlopen(req)
+		# except urllib2.HTTPError, e:
+		# 	print e.fp.read()
+		# source = page.read()
+		source = requests.get(url).text
+		doc = html.fromstring(source)
 		torrent_urls = doc.cssselect(".data-list>.row")
 		if not torrent_urls:
 			break
@@ -56,13 +54,14 @@ def torrent_lookup(key, pages):
 	return tor_dict
 
 def retrieve_mag(url):
-	global hdr
-	req = urllib2.Request(url, headers=hdr)
-	try:
-		page = urllib2.urlopen(req)
-	except urllib2.HTTPError, e:
-		print e.fp.read()
-	source = page.read()
+	# # global hdr
+	# req = urllib2.Request(url, headers=hdr)
+	# try:
+	# 	page = urllib2.urlopen(req)
+	# except urllib2.HTTPError, e:
+	# 	print e.fp.read()
+	# source = page.read()
+	source = requests.get(url).text
 	doc = html.fromstring(source)
 	magnet = doc.cssselect("#magnetLink")[0].text
 	return magnet
