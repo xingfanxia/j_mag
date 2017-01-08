@@ -18,33 +18,41 @@ hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML,
 	   'Accept-Language': 'en-US,en;q=0.8',
 	   'Connection': 'keep-alive'}
 
-def torrent_lookup(key):
+def torrent_lookup(key, pages):
 	global hdr
 	count = 0
 	tor_dict = dict()
 	query = urllib.urlencode( {'q' : key } )
-	url = "https://btso.pw/search/" + query[2:]
-	req = urllib2.Request(url, headers=hdr)
-	try:
-		page = urllib2.urlopen(req)
-	except urllib2.HTTPError, e:
-		print e.fp.read()
-	source = page.read()
-	doc = html.fromstring(source)
-	torrent_urls = doc.cssselect(".data-list>.row")
-	for torrent in torrent_urls:
+	base_url = "https://btso.pw/search/" + query[2:]
+	for i in range(1, pages+1):
+		url = base_url + "/page/"+str(i)
+		print url
+		req = urllib2.Request(url, headers=hdr)
 		try:
-			title = torrent.cssselect("a")[0].attrib['title']
-			addr = torrent.cssselect("a")[0].attrib['href']
-			size = torrent.cssselect(".size")[0].text
-			date = torrent.cssselect(".date")[0].text
-			# hash_no = str(re.findall(r'hash\/(.+)', addr)[0])
-			# print title, addr, size, date, hash_no
-			count += 1
-			data_ls = [title, size, date, addr]
-			tor_dict[count] = data_ls
+			page = urllib2.urlopen(req)
+		except urllib2.HTTPError, e:
+			print e.fp.read()
+		source = page.read()
+		try:
+			doc = html.fromstring(source)
 		except:
 			pass
+		torrent_urls = doc.cssselect(".data-list>.row")
+		if not torrent_urls:
+			break
+		for torrent in torrent_urls:
+			try:
+				title = torrent.cssselect("a")[0].attrib['title']
+				addr = torrent.cssselect("a")[0].attrib['href']
+				size = torrent.cssselect(".size")[0].text
+				date = torrent.cssselect(".date")[0].text
+				# hash_no = str(re.findall(r'hash\/(.+)', addr)[0])
+				# print title, addr, size, date, hash_no
+				count += 1
+				data_ls = [title, size, date, addr]
+				tor_dict[count] = data_ls
+			except:
+				pass
 	return tor_dict
 
 def retrieve_mag(url):
@@ -59,9 +67,10 @@ def retrieve_mag(url):
 	magnet = doc.cssselect("#magnetLink")[0].text
 	return magnet
 
-if __name__ == '__main__':
+def session():
 	query = str(raw_input("Please enter search keyword: \n"))
-	result = torrent_lookup(query)
+	pages = int(raw_input("How many pages do you want to display: (30 entries per page)\n"))
+	result = torrent_lookup(query, pages)
 	print "Here is a List of the Movies:"
 	print "================================================="	
 	for i in range(1, len(result)+1):
@@ -70,6 +79,15 @@ if __name__ == '__main__':
 			print items
 		print "***********************************************"
 
-	choice = int(input("Please enter your Choice: \n"))
-	tor_link = result[choice][3]
-	print retrieve_mag(tor_link)
+	choices = raw_input("enter choices separated by space:\n")
+	choice_ls = map(int, choices.split(' '))
+	print "\nHere are the magnet links: \n ----------------------------------"
+	for choice in choice_ls:
+		mv_title = result[choice][0]
+		tor_link = result[choice][3]
+		print mv_title + ":"
+		print retrieve_mag(tor_link)
+
+if __name__ == '__main__':
+	while True:
+		session()
