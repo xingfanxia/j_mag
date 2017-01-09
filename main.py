@@ -5,7 +5,7 @@
 # @Link    : http://xiax.tech
 # @Version : $Id$
 
-import os, re, time, urllib2, urllib, sys, requests
+import os, re, time, urllib2, urllib, sys, requests, random
 from cookielib import CookieJar
 from lxml import html, etree
 reload(sys) 
@@ -17,6 +17,32 @@ hdr = {'User-Agent': 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; 
 	   'Accept-Encoding': 'none',
 	   'Accept-Language': 'en-US,en;q=0.8',
 	   'Connection': 'keep-alive'}
+
+def LoadUserAgents(uafile="user_agents.txt"):
+    """
+    uafile : string
+        path to text file of user agents, one per line
+    """
+    uas = []
+    with open(uafile, 'rb') as uaf:
+        for ua in uaf.readlines():
+            if ua:
+                uas.append(ua.strip()[1:-1-1])
+    random.shuffle(uas)
+    return uas
+
+def getUserAgent():
+	uas = LoadUserAgents()
+	ua = random.choice(uas)
+	hdr = {'User-Agent': ua,
+	   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	   'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+	   'Accept-Encoding': 'none',
+	   'Accept-Language': 'en-US,en;q=0.8',
+	   'Connection': 'close'}
+	print hdr
+	return hdr
+
 
 def torrent_lookup(key, pages):
 	global hdr
@@ -32,8 +58,12 @@ def torrent_lookup(key, pages):
 		except urllib2.HTTPError, e:
 			print e.fp.read()
 		source = page.read()
-		# source = requests.get(url).text
-		doc = html.fromstring(source)
+		# source = requests.get(url, headers=hdr).text
+		try:
+			doc = html.fromstring(source)
+		except:
+			print "Unexpected error"
+			continue
 		torrent_urls = doc.cssselect(".data-list>.row")
 		if not torrent_urls:
 			break
@@ -60,7 +90,7 @@ def retrieve_mag(url):
 	except urllib2.HTTPError, e:
 		print e.fp.read()
 	source = page.read()
-	# source = requests.get(url).text
+	# source = requests.get(url, headers=hdr).text
 	doc = html.fromstring(source)
 	magnet = doc.cssselect("#magnetLink")[0].text
 	return magnet
